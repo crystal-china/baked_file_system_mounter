@@ -1,6 +1,6 @@
 name: baked_file_system_mounter
 description: |
-  assemble files in assets folder into executable use `backed_file_system` at compile time, \
+  assemble files in assets folder into executable binary use `backed_file_system` at compile time, \
   then mount it to new file system folder at runtime.
 version: 0.3.0
 crystal: ">= 0.35.0"

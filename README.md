@@ -1,6 +1,52 @@
 # baked_file_system_mounter
 
-TODO: Write a description here
+assemble files in assets folder into executable binary use `backed_file_system` at compile time, then mount it to new file system folder at runtime. 
+
+Let us use a [kemal](https://github.com/kemalcr/kemal) as a example.
+
+We save our assets file here
+
+
+```sh
+ ╰─ $ tree src/assets/
+src/assets/
+└── materialize
+    ├── css
+    │   └── materialize.min.css
+    └── js
+        └── materialize.min.js
+```
+
+What we want is assemble those assets file into binary when build.
+
+Then, when copy binary to target environment, starting it, will create new folder like this with assets.
+
+```sh
+╰─ $ tree public
+public/
+└── materialize
+    ├── css
+    │   └── materialize.min.css
+    └── js
+        └── materialize.min.js
+3 directories, 2 files
+```
+
+Any files you add to the `public` directory will be served automatically by Kemal by default.
+
+So, it will load stylesheet correctly when you write ECR template like this.
+
+
+```erb
+<html>
+  <head>
+    <link rel="stylesheet" href="/materialize/css/materialize.min.css" />
+  </head>
+  <body>
+      <%= yield_content "footer" %>
+  </body>
+</html>
+```
 
 ## Installation
 
@@ -17,10 +63,18 @@ TODO: Write a description here
 ## Usage
 
 ```crystal
-require "baked_file_system_mounter"
-```
+# src/config/baked_file_system_mounter.cr
 
-TODO: Write usage instructions here
+require "baked_file_system_mounter"
+
+# 
+# so, we assemble all files in `src/assets` into executable binary when we build.
+BakedFileSystemMounter.assemble from: "src/assets", to: "public"
+
+# Then mount those assembled files into `public` folder(will create it if not exists) will serve by kemal.
+BakedFileSystemStorage.mount
+
+```
 
 ## Development
 
