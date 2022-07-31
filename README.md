@@ -62,16 +62,26 @@ So, it will load stylesheet correctly when you write ECR template like this.
 
 ## Usage
 
+In this example, we mount two folder, one for assets, one for migration.
+
 ```crystal
 # src/config/baked_file_system_mounter.cr
 
 require "baked_file_system_mounter"
 
 # 
-# so, we assemble all files in `src/assets` into executable binary when we build.
-BakedFileSystemMounter.assemble from: "src/assets", to: "public"
+# so, we assemble all files in `src/assets`,`db` into executable binary when we build, 
+BakedFileSystemMounter.assemble(
+  {
+    "src/assets" => "public",
+    "db" => "db"
+  }
+)
 
-# Then mount those assembled files into `public` folder(will create it if not exists) will serve by kemal.
+# we assemble the db into db folder too 
+# Then mount those files in `src/assets` into `public` folder(will create it if not exists)
+# will serve by kemal when server is start.
+# mount `db` into `db` folder too for run migrate when server is starting.
 BakedFileSystemStorage.mount
 
 ```
