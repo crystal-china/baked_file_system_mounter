@@ -17,7 +17,7 @@ module BakedFileSystemMounter
 
             FileUtils.mkdir_p File.dirname(target_file_name) unless File.exists?(target_file_name)
 
-            File.write(target_file_name, FileStorage.get(filename.sub("{{from.id}}/", "")).gets_to_end)
+            File.write(target_file_name, get(filename.sub("{{from.id}}/", "")).gets_to_end)
           end
         end
       end
