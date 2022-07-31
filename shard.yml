@@ -9,6 +9,4 @@ dependencies:
   baked_file_system:
     github: schovi/baked_file_system
 
-crystal: 1.5.0
-
 license: MIT
