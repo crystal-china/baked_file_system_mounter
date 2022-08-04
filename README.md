@@ -69,8 +69,8 @@ In this example, we mount two folder, one for assets, one for migration.
 
 require "baked_file_system_mounter"
 
-# 
-# so, we assemble all files in `src/assets`,`db` into executable binary when we build, 
+#
+# so, we assemble all files in `src/assets`,`db` into executable binary when we build,
 BakedFileSystemMounter.assemble(
   {
     "src/assets" => "public",
@@ -78,12 +78,15 @@ BakedFileSystemMounter.assemble(
   }
 )
 
-# we assemble the db into db folder too 
+# we assemble the db into db folder too
 # Then mount those files in `src/assets` into `public` folder(will create it if not exists)
 # will serve by kemal when server is start.
-# mount `db` into `db` folder too for run migrate when server is starting.
-BakedFileSystemStorage.mount
+# mount `db` into `db` folder too for run migrate when server is starting on production..
 
+if APP_ENV == "production"
+  STDERR.puts "Mounting from baked file system ..."
+  BakedFileSystemStorage.mount
+end
 ```
 
 ## Development
