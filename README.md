@@ -87,6 +87,28 @@ if APP_ENV == "production"
   STDERR.puts "Mounting from baked file system ..."
   BakedFileSystemStorage.mount
 end
+
+```
+
+You can pass a Array as argument too.
+
+```crystal
+# It same as this follwing code
+
+# BakedFileSystemMounter.assemble(
+#   {
+#     "public" => "public",
+#     "db" => "db"
+#   }
+# )
+
+BakedFileSystemMounter.assemble(["public", "db"])
+
+if APP_ENV == "production"
+  STDERR.puts "Mounting from baked file system ..."
+  BakedFileSystemStorage.mount
+end
+
 ```
 
 ## Development
