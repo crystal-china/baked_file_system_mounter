@@ -23,7 +23,7 @@ module BakedFileSystemMounter
       extend BakedFileSystem
       {% for key, value in new_mapping %}
         bake_folder "{{root}}/{{key.id}}"
-        @@backed_files_{{i}} = {{ run("./backed_files", key).strip }} of String
+        @@backed_files_{{i}} = {{ run("./baked_file_system_mounter/baked_files", key).strip }} of String
         {% i += 1 %}
       {% end %}
 

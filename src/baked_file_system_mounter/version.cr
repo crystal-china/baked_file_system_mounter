@@ -1,3 +1,3 @@
 module BakedFileSystemMounter
-  VERSION = "0.5.0"
+  VERSION = {{ `shards version "#{__DIR__}"`.chomp.stringify }}
 end
