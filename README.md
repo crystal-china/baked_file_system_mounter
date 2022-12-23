@@ -55,7 +55,7 @@ So, it will load stylesheet correctly when you write ECR template like this.
    ```yaml
    dependencies:
      baked_file_system_mounter:
-       github: zw963/baked_file_system_mounter
+       github: crystal-china/baked_file_system_mounter
    ```
 
 2. Run `shards install`
@@ -117,7 +117,7 @@ TODO: Write development instructions here
 
 ## Contributing
 
-1. Fork it (<https://github.com/zw963/baked_file_system_mounter/fork>)
+1. Fork it (<https://github.com/crystal-china/baked_file_system_mounter/fork>)
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
