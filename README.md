@@ -2,13 +2,10 @@
 
 assemble files in assets folder into executable binary use `backed_file_system` at compile time, then mount it to new file system folder at runtime. 
 
-Let us use a [kemal](https://github.com/kemalcr/kemal) as a example.
-
-We save our assets file here
+Let us assume save our assets file here before compile.
 
 
 ```sh
- ╰─ $ tree src/assets/
 src/assets/
 └── materialize
     ├── css
@@ -19,10 +16,9 @@ src/assets/
 
 What we want is assemble those assets file into binary when build.
 
-Then, when copy binary to target environment, starting it, will create new folder like this with assets.
+Then, when copy binary to target host, and running it, will extract assets from binary into `/public` folder like this:
 
 ```sh
-╰─ $ tree public
 public/
 └── materialize
     ├── css
@@ -32,9 +28,20 @@ public/
 3 directories, 2 files
 ```
 
-Any files you add to the `public` directory will be served automatically by Kemal by default.
+With following configuration.
 
-So, it will load stylesheet correctly when you write ECR template like this.
+```crystal
+require "baked_file_system_mounter"
+
+BakedFileSystemMounter.assemble(
+  {
+    "src/assets" => "public",
+  }
+)
+```
+
+
+It will load stylesheet correctly when you write ECR template like this when in development/deployment environment.
 
 
 ```erb
