@@ -1,5 +1,6 @@
 require "baked_file_system"
 require "./baked_file_system_mounter/version"
+require "file_utils"
 
 module BakedFileSystemMounter
   macro assemble(mapping)
