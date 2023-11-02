@@ -38,11 +38,14 @@ BakedFileSystemMounter.assemble(
     "src/assets" => "public",
   }
 )
+
+# Use macro check if build with --release
+{% if flag?(:release) %}
+  BakedFileSystemStorage.mount
+{% end %}
 ```
 
-
-It will load stylesheet correctly when you write ECR template like this when in development/deployment environment.
-
+It will load following stylesheet from `src/assets/materialize/...` when in development, but will load from `public/materialize/...` when in deployment.
 
 ```erb
 <html>
@@ -111,7 +114,7 @@ You can pass a Array as argument too.
 
 BakedFileSystemMounter.assemble(["public", "db"])
 
-if APP_ENV == "production"
+if APP_ENV == "production" 
   STDERR.puts "Mounting from baked file system ..."
   BakedFileSystemStorage.mount
 end
