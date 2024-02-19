@@ -30,13 +30,13 @@ module BakedFileSystemMounter
       extend BakedFileSystem
       {% for key, value in new_mapping %}
         bake_folder {{ key }}
-        @@backed_files_{{i}} = {{ run("./baked_file_system_mounter/baked_files", key).strip }} of String
+        @@baked_files_{{i}} = {{ run("./baked_file_system_mounter/baked_files", key).strip }} of String
         {% i += 1 %}
       {% end %}
 
       def self.mount
         {% for key, value in new_mapping %}
-          @@backed_files_{{j}}.each do |filename|
+          @@baked_files_{{j}}.each do |filename|
             target_file_name = filename.sub("{{key.id}}", "{{value.id}}")
 
             FileUtils.mkdir_p File.dirname(target_file_name) unless File.exists?(target_file_name)
