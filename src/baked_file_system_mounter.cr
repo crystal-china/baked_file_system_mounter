@@ -15,12 +15,11 @@ module BakedFileSystemMounter
         {% new_mapping[value] = value %}
       {% end %}
     {% elsif mapping.is_a? HashLiteral %}
-      {% root = system("pwd").strip.id %}
       {% for k, v in mapping %}
-        {% if v.starts_with('/') %}
+        {% if v.starts_with?('/') %}
           {% new_mapping[k] = v %}
         {% else %}
-          {% new_mapping[k] = "#{root}/#{v}" %}
+          {% new_mapping[k] = "./#{v.id}" %}
           {% end %}
       {% end %}
     {% end %}
