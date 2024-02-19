@@ -1,24 +1,28 @@
 # baked_file_system_mounter
 
-assemble files in assets folder into executable binary use `backed_file_system` at compile time, then mount it to new file system folder at runtime. 
+assemble files inside current directories into executable binary use `backed_file_system` at compile time, then mount it on new file system at runtime. 
 
-Let us assume save our assets file here before compile.
+Let us assume there are assets folders like this:
 
 
 ```sh
-src/assets/
-└── materialize
-    ├── css
-    │   └── materialize.min.css
-    └── js
-        └── materialize.min.js
+PROJECT_ROOT/
+  src/assets/
+  └── materialize
+	  ├── css
+	  │   └── materialize.min.css
+	  └── js
+		  └── materialize.min.js
 ```
 
-What we want is assemble those assets file into binary when build.
+What we want is:
 
-Then, when copy binary to target host, and running it, will extract assets from binary into `/public` folder like this:
+1. Assemble those assets file into binary when build.
+
+2. When copying binary into `/public` directory (on target host), running it will extract assets, like this:
 
 ```sh
+my_app*
 public/
 └── materialize
     ├── css
@@ -39,13 +43,12 @@ BakedFileSystemMounter.assemble(
   }
 )
 
-# Use macro check if build with --release
 {% if flag?(:release) %}
   BakedFileSystemStorage.mount
 {% end %}
 ```
 
-It will load following stylesheet from `src/assets/materialize/...` when in development, but will load from `public/materialize/...` when in deployment.
+Then, use can use those assets both in development(src/assets/materialize) and production(public/materialize), like this:
 
 ```erb
 <html>
@@ -72,15 +75,13 @@ It will load following stylesheet from `src/assets/materialize/...` when in deve
 
 ## Usage
 
-In this example, we mount two folder, one for assets, one for migration.
+You can passing a `Hash` as argument for mapping.
 
 ```crystal
-# src/config/baked_file_system_mounter.cr
-
 require "baked_file_system_mounter"
 
 #
-# so, we assemble all files in `src/assets`,`db` into executable binary when we build,
+# we assemble all files in `src/assets`,`db` into executable binary when we build,
 BakedFileSystemMounter.assemble(
   {
     "src/assets" => "public",
@@ -88,13 +89,10 @@ BakedFileSystemMounter.assemble(
   }
 )
 
-# we assemble the db into db folder too
-# Then mount those files in `src/assets` into `public` folder(will create it if not exists)
-# will serve by kemal when server is start.
-# mount `db` into `db` folder too for run migrate when server is starting on production..
-
 if APP_ENV == "production"
-  STDERR.puts "Mounting from baked file system ..."
+  # we assemble the db into db folder too
+  # Then mount files in `src/assets` into `public` and files in `db` into `db`.
+  # folder will be created it if not exists.
   BakedFileSystemStorage.mount
 end
 
@@ -103,7 +101,9 @@ end
 You can pass a Array as argument too.
 
 ```crystal
-# It same as this follwing code
+BakedFileSystemMounter.assemble(["public", "db"])
+
+# It's same as:
 
 # BakedFileSystemMounter.assemble(
 #   {
@@ -112,13 +112,24 @@ You can pass a Array as argument too.
 #   }
 # )
 
-BakedFileSystemMounter.assemble(["public", "db"])
-
 if APP_ENV == "production" 
-  STDERR.puts "Mounting from baked file system ..."
   BakedFileSystemStorage.mount
 end
 
+```
+
+It can be used to mount assets outside current directory, e.g. /tmp
+
+```crystal
+BakedFileSystemMounter.assemble(
+    {
+      "sounds" => "/tmp/sounds",
+    }
+)
+
+if APP_ENV == "production" 
+  BakedFileSystemStorage.mount
+end
 ```
 
 ## Development
