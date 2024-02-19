@@ -15,16 +15,22 @@ module BakedFileSystemMounter
         {% new_mapping[value] = value %}
       {% end %}
     {% elsif mapping.is_a? HashLiteral %}
-      {% new_mapping = mapping %}
+      {% root = system("pwd").strip.id %}
+      {% for k, v in mapping %}
+        {% if v.starts_with('/') %}
+          {% new_mapping[k] = v %}
+        {% else %}
+          {% new_mapping[k] = "#{root}/#{v}" %}
+          {% end %}
+      {% end %}
     {% end %}
 
-    {% root = system("pwd").strip.id %}
     {% i, j = 0, 0 %}
 
     class BakedFileSystemStorage
       extend BakedFileSystem
       {% for key, value in new_mapping %}
-        bake_folder "{{root}}/{{key.id}}"
+        bake_folder {{ key }}
         @@backed_files_{{i}} = {{ run("./baked_file_system_mounter/baked_files", key).strip }} of String
         {% i += 1 %}
       {% end %}
