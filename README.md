@@ -17,18 +17,19 @@ PROJECT_ROOT/
 
 What we want is:
 
-1. Assemble those assets file into binary when build.
+1. Assemble assets files in `src/assets` folder into binary when build.
+2. Then binary into `/foo` directory on target host, running it will extract assets from binary.
 
-2. When copying binary into `/public` directory (on target host), running it will extract assets, like this:
+Look like this:
 
 ```sh
-my_app*
-public/
-└── materialize
-    ├── css
-    │   └── materialize.min.css
-    └── js
-        └── materialize.min.js
+/foo/
+  public/
+  └── materialize
+	  ├── css
+	  │   └── materialize.min.css
+	  └── js
+		  └── materialize.min.js
 3 directories, 2 files
 ```
 
@@ -98,7 +99,7 @@ end
 
 ```
 
-You can pass a Array as argument too.
+You can pass a Array as argument too, in this case, it use `PWD` as default folder.
 
 ```crystal
 BakedFileSystemMounter.assemble(["public", "db"])

@@ -24,12 +24,14 @@ module BakedFileSystemMounter
       {% end %}
     {% end %}
 
+    {% root = system("pwd").strip.id %}
+
     {% i, j = 0, 0 %}
 
     class BakedFileSystemStorage
       extend BakedFileSystem
       {% for key, value in new_mapping %}
-        bake_folder {{ key }}
+        bake_folder "{{root}}/{{key.id}}"
         @@baked_files_{{i}} = {{ run("./baked_file_system_mounter/baked_files", key).strip }} of String
         {% i += 1 %}
       {% end %}
