@@ -1,12 +1,18 @@
-# Breaking changes
+# Breaking Changes
 
-`BakedFileSystemStorage.mount` rename to `BakedFileSystemMounter::Storage.mount` since 0.6.0!
+As of version 0.6.0, the method `BakedFileSystemStorage.mount` has been renamed
+to `BakedFileSystemMounter::Storage.mount`.
+
 
 # baked_file_system_mounter
 
-assemble files inside current directories into executable binary use `backed_file_system` at compile time, then mount it on new file system at runtime. 
+The baked_file_system_mounter allows you to assemble files in the a directory 
+(current working directory by default) into binary executable at compile time 
+(using baked_file_system) and mount the files back into a new file system at runtime.
 
-Let us assume there are assets folders like this:
+## Overview
+
+Imagine you have an assets folder structured like this:
 
 
 ```sh
@@ -19,12 +25,13 @@ PROJECT_ROOT/
 		  └── materialize.min.js
 ```
 
-What we want is:
+If you want to:
 
-1. Assemble assets files in `src/assets` folder into binary when build.
-2. Then binary into `/foo` directory on target host, running it will extract assets from binary.
+1. Compile the files in the `src/assets` folder into a binary during the build process.
+2. At runtime, extract the assets from the binary and make them available in the 
+   directory `/foo` on the target host.
 
-Look like this:
+After running, your directory structure will look like this:
 
 ```sh
 /foo/
@@ -37,7 +44,7 @@ Look like this:
 3 directories, 2 files
 ```
 
-With following configuration.
+This can be achieved with the following configuration:
 
 ```crystal
 require "baked_file_system_mounter"
@@ -53,7 +60,8 @@ BakedFileSystemMounter.assemble(
 {% end %}
 ```
 
-Then, use can use those assets both in development(src/assets/materialize) and production(public/materialize), like this:
+Now you can access the assets in both development (src/assets/materialize) 
+and production (public/materialize), like this:
 
 ```erb
 <html>
@@ -80,13 +88,13 @@ Then, use can use those assets both in development(src/assets/materialize) and p
 
 ## Usage
 
-You can passing a `Hash` as argument for mapping.
+### You can pass a Hash as an argument to define folder mappings
 
 ```crystal
 require "baked_file_system_mounter"
 
 #
-# we assemble all files in `src/assets`,`db` into executable binary when we build,
+# Assemble files from `src/assets` and `db` into the executable binary during build
 BakedFileSystemMounter.assemble(
   {
     "src/assets" => "public",
@@ -95,15 +103,18 @@ BakedFileSystemMounter.assemble(
 )
 
 if APP_ENV == "production"
-  # we assemble the db into db folder too
-  # Then mount files in `src/assets` into `public` and files in `db` into `db`.
-  # folder will be created it if not exists.
+  # Mount the contents during runtime
+  # Files from `src/assets` will appear in `public`
+  # Files from `db` will appear in `db`
   BakedFileSystemMounter::Storage.mount
 end
 
 ```
 
-You can pass a Array as argument too, in this case, it use `PWD` as default folder.
+### Using an Array for default mapping
+
+You can also pass an Array as an argument for default mappings. In this case, 
+the current working directory (PWD) is used as the base directory.
 
 ```crystal
 BakedFileSystemMounter.assemble(["public", "db"])
@@ -122,8 +133,12 @@ if APP_ENV == "production"
 end
 
 ```
+### Mounting files outside current directory
 
-It can be used to mount assets outside current directory, e.g. /tmp
+You can even mount assets outside the current working directory. 
+
+For example,  /tmp:
+
 
 ```crystal
 BakedFileSystemMounter.assemble(
