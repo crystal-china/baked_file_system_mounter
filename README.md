@@ -1,3 +1,7 @@
+# Breaking changes
+
+`BakedFileSystemStorage.mount` rename to `BakedFileSystemMounter::Storage.mount` since 0.6.0!
+
 # baked_file_system_mounter
 
 assemble files inside current directories into executable binary use `backed_file_system` at compile time, then mount it on new file system at runtime. 
@@ -45,7 +49,7 @@ BakedFileSystemMounter.assemble(
 )
 
 {% if flag?(:release) %}
-  BakedFileSystemStorage.mount
+  BakedFileSystemMounter::Storage.mount
 {% end %}
 ```
 
@@ -94,7 +98,7 @@ if APP_ENV == "production"
   # we assemble the db into db folder too
   # Then mount files in `src/assets` into `public` and files in `db` into `db`.
   # folder will be created it if not exists.
-  BakedFileSystemStorage.mount
+  BakedFileSystemMounter::Storage.mount
 end
 
 ```
@@ -114,7 +118,7 @@ BakedFileSystemMounter.assemble(["public", "db"])
 # )
 
 if APP_ENV == "production" 
-  BakedFileSystemStorage.mount
+  BakedFileSystemMounter::Storage.mount
 end
 
 ```
@@ -129,7 +133,7 @@ BakedFileSystemMounter.assemble(
 )
 
 if APP_ENV == "production" 
-  BakedFileSystemStorage.mount
+  BakedFileSystemMounter::Storage.mount
 end
 ```
 
