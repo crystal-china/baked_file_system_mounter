@@ -28,7 +28,7 @@ module BakedFileSystemMounter
 
     {% i, j = 0, 0 %}
 
-    class BakedFileSystemStorage
+    class BakedFileSystemMounter::Storage
       extend BakedFileSystem
       {% for key, value in new_mapping %}
         bake_folder "{{root}}/{{key.id}}"
