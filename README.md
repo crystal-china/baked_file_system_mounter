@@ -1,18 +1,9 @@
-# Breaking Changes
-
-As of version 0.6.0, the method `BakedFileSystemStorage.mount` has been renamed
-to `BakedFileSystemMounter::Storage.mount`.
-
-
 # baked_file_system_mounter
 
-The baked_file_system_mounter allows you to assemble files in the a directory 
-(current working directory by default) into binary executable at compile time 
-(using baked_file_system) and mount the files back into a new file system at runtime.
+Assemble files and directories into an executable binary using `baked_file_system`
+at compile time, then mount them onto a new file system at runtime.
 
-## Overview
-
-Imagine you have an assets folder structured like this:
+Let us assume there are assets folders like this:
 
 
 ```sh
@@ -25,13 +16,12 @@ PROJECT_ROOT/
 		  └── materialize.min.js
 ```
 
-If you want to:
+What we want is:
 
-1. Compile the files in the `src/assets` folder into a binary during the build process.
-2. At runtime, extract the assets from the binary and make them available in the 
-   directory `/foo` on the target host.
+1. Assemble assets files in `src/assets` folder into binary when build.
+2. Then binary into `/foo` directory on target host, running it will extract assets from binary.
 
-After running, your directory structure will look like this:
+Look like this:
 
 ```sh
 /foo/
@@ -44,7 +34,7 @@ After running, your directory structure will look like this:
 3 directories, 2 files
 ```
 
-This can be achieved with the following configuration:
+With following configuration:
 
 ```crystal
 require "baked_file_system_mounter"
@@ -60,8 +50,8 @@ BakedFileSystemMounter.assemble(
 {% end %}
 ```
 
-Now you can access the assets in both development (src/assets/materialize) 
-and production (public/materialize), like this:
+Then you can use those assets both in development (`src/assets/materialize`) and
+production (`public/materialize`), like this:
 
 ```erb
 <html>
@@ -88,33 +78,64 @@ and production (public/materialize), like this:
 
 ## Usage
 
-### You can pass a Hash as an argument to define folder mappings
+`assemble` accepts either a `Hash` or an `Array`.
+
+Use a `Hash` when you want to map a source path to a different target path.
+Source paths may point to either a directory or a single file.
+Relative source paths are resolved from the compile-time working directory
+(`pwd`).
+
+`assemble` currently expects string literals in the mapping. String constants,
+string interpolation, and other macro expressions are not supported.
 
 ```crystal
 require "baked_file_system_mounter"
 
-#
-# Assemble files from `src/assets` and `db` into the executable binary during build
 BakedFileSystemMounter.assemble(
   {
     "src/assets" => "public",
-    "db" => "db"
+    "db" => "db",
   }
 )
 
 if APP_ENV == "production"
-  # Mount the contents during runtime
-  # Files from `src/assets` will appear in `public`
-  # Files from `db` will appear in `db`
+  # Mount files in `src/assets` into `public` and files in `db` into `db`.
+  # Target folders will be created if they do not exist.
   BakedFileSystemMounter::Storage.mount
 end
 
 ```
 
-### Using an Array for default mapping
+### Single file
 
-You can also pass an Array as an argument for default mappings. In this case, 
-the current working directory (PWD) is used as the base directory.
+You can also bake a single file to an exact target path:
+
+```crystal
+BakedFileSystemMounter.assemble(
+  {
+    "public/bun-manifest.json" => "public/bun-manifest.json",
+  }
+)
+```
+
+### Directory + file
+
+Directories and files can be mixed in a single `assemble` call:
+
+```crystal
+BakedFileSystemMounter.assemble(
+  {
+    "public/assets" => "public/assets",
+    "public/bun-manifest.json" => "public/bun-manifest.json",
+    "markdowns" => "markdowns",
+  }
+)
+```
+
+### Array shorthand
+
+You can pass an `Array` as argument too. In this case it uses `PWD` as the
+default source and target path for each entry.
 
 ```crystal
 BakedFileSystemMounter.assemble(["public", "db"])
@@ -133,23 +154,46 @@ if APP_ENV == "production"
 end
 
 ```
-### Mounting files outside current directory
 
-You can even mount assets outside the current working directory. 
+### Absolute target path
 
-For example,  /tmp:
-
+It can be used to mount assets outside the current directory, for example into
+`/tmp`:
 
 ```crystal
 BakedFileSystemMounter.assemble(
-    {
-      "sounds" => "/tmp/sounds",
-    }
+  {
+    "sounds" => "/tmp/sounds",
+  }
 )
 
 if APP_ENV == "production" 
   BakedFileSystemMounter::Storage.mount
 end
+```
+
+### Absolute source directory
+
+The source path can also be an absolute directory path:
+
+```crystal
+BakedFileSystemMounter.assemble(
+  {
+    "/opt/my_app/assets" => "public/assets",
+  }
+)
+```
+
+### Absolute source file
+
+Absolute source paths also work for single files:
+
+```crystal
+BakedFileSystemMounter.assemble(
+  {
+    "/opt/my_app/bun-manifest.json" => "public/bun-manifest.json",
+  }
+)
 ```
 
 ## Development
