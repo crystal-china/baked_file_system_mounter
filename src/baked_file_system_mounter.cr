@@ -12,14 +12,30 @@ module BakedFileSystemMounter
 
     {% if mapping.is_a? ArrayLiteral %}
       {% for value in mapping %}
-        {% new_mapping[value] = value %}
+        {% normalized_value = value %}
+        {% if value.is_a?(Path) %}
+          {% normalized_value = value.resolve %}
+        {% end %}
+
+        {% new_mapping[normalized_value] = normalized_value %}
       {% end %}
     {% elsif mapping.is_a? HashLiteral %}
       {% for k, v in mapping %}
-        {% if v.starts_with?('/') %}
-          {% new_mapping[k] = v %}
+        {% normalized_key = k %}
+        {% normalized_value = v %}
+
+        {% if k.is_a?(Path) %}
+          {% normalized_key = k.resolve %}
+        {% end %}
+
+        {% if v.is_a?(Path) %}
+          {% normalized_value = v.resolve %}
+        {% end %}
+
+        {% if normalized_value.starts_with?('/') %}
+          {% new_mapping[normalized_key] = normalized_value %}
         {% else %}
-          {% new_mapping[k] = "./#{v.id}" %}
+          {% new_mapping[normalized_key] = "./#{normalized_value.id}" %}
         {% end %}
       {% end %}
     {% end %}

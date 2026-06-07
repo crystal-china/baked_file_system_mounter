@@ -85,8 +85,8 @@ Source paths may point to either a directory or a single file.
 Relative source paths are resolved from the compile-time working directory
 (`pwd`).
 
-`assemble` currently expects string literals in the mapping. String constants,
-string interpolation, and other macro expressions are not supported.
+`assemble` supports string literals and string constants in the mapping.
+String interpolation and other macro expressions are not supported.
 
 ```crystal
 require "baked_file_system_mounter"
@@ -104,6 +104,19 @@ if APP_ENV == "production"
   BakedFileSystemMounter::Storage.mount
 end
 
+```
+
+String constants are also supported:
+
+```crystal
+ASSETS_DIR = "src/assets"
+PUBLIC_DIR = "public"
+
+BakedFileSystemMounter.assemble(
+  {
+    ASSETS_DIR => PUBLIC_DIR,
+  }
+)
 ```
 
 ### Single file
